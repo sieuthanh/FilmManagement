@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-configuration PUBLIC
+        "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+        "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+
+	<session-factory>
+
+		<!-- Database connection settings -->
+		<property name="connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+		<property name="connection.url">jdbc:sqlserver://localhost:1433;databaseName=IMDB</property>
+		<property name="connection.username">sa</property>
+		<property name="connection.password">1</property>
+
+		<!-- JDBC connection pool (use the built-in) -->
+		<property name="connection.pool_size">10</property>
+
+		<!-- SQL dialect -->
+		<property name="dialect">org.hibernate.dialect.SQLServerDialect</property>
+
+		<!-- Enable Hibernate's current session context -->
+		<property name="current_session_context_class">thread</property>
+		<!-- Disable the second-level cache -->
+		<property name="cache.provider_class">org.hibernate.cache.NoCacheProvider</property>
+		<property name="hibernate.hbm2ddl.auto">update </property>
+		<!-- Echo all executed SQL to stdout -->
+		<property name="show_sql">true</property>
+		<mapping class="admin.bean.AdminBean" />
+		<mapping class="databasemanager.Movie" />
+		<mapping class="databasemanager.Company" />
+		<mapping class="databasemanager.Person" />
+		<mapping class="admin.bean.FilmStar" />
+		<mapping class="admin.bean.FilmCompany" />
+		<mapping class="admin.bean.FilmGenre" />
+		<mapping class="admin.bean.FilmDirector" />
+		<mapping class="databasemanager.Disk" />
+		<mapping class="databasemanager.CartElement" />
+		<mapping class="databasemanager.HotMovie" />
+		<mapping class="databasemanager.MoneyUnit" />
+		<mapping class="databasemanager.NewestMovie" />
+		<mapping class="databasemanager.VipMember" />
+		<mapping class="bill.BillArchive" />
+		<mapping class="statistics.MonthStatistics" />
+		<mapping class="statistics.DayStatistics" />
+	</session-factory>
+
+</hibernate-configuration>
+
