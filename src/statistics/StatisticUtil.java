@@ -53,6 +53,19 @@ public class StatisticUtil {
 		Session session = sf.openSession();
 		int i = 0;
 		int MonthSumMoney = 0;
+		Criteria criteria = session.createCriteria(DayStatistics.class);
+		criteria.add(Restrictions.eq("month", month)).add(
+				Restrictions.eq("year", year));
+
+		ArrayList<DayStatistics> existMonthList = (ArrayList<DayStatistics>) criteria
+				.list();
+		if (existMonthList != null) {
+			for (DayStatistics tmp : existMonthList) {
+				session.delete(tmp);
+			}
+
+		}
+		// Save
 		for (i = 0; i < eachDayInMonthStatisticResult.size(); i++) {
 			ds = new DayStatistics();
 			ds.setDay(i + 1);
@@ -71,6 +84,7 @@ public class StatisticUtil {
 		session.beginTransaction().commit();
 		session.close();
 		return i;
+
 	}
 
 	public ArrayList<Integer> getStatisticsEachMonthInYear(int year) {
@@ -100,8 +114,8 @@ public class StatisticUtil {
 	public static void main(String[] args) {
 		StatisticUtil su = new StatisticUtil();
 		ArrayList<Integer> results = new ArrayList<Integer>();
-		results = su.getStatisticsEachMonthInYear(2012);
-
+		results = su.getStatisticEachDayInMonth(11, 2012);
+		su.saveStatisticsEachDayInMonth(results, 11, 2012);
 		for (int i = 0; i < results.size(); i++) {
 			System.out.println(results.get(i));
 		}
