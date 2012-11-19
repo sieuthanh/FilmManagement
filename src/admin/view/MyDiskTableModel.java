@@ -15,8 +15,8 @@ import admin.controller.DiskController;
  */
 public class MyDiskTableModel extends AbstractTableModel {
     
-    private String[] columnNames = {"Id", "Disk Per Movie", "Total"};
-    private Vector data = DiskController.loadDisk();
+    private String[] columnNames = {"Id","Movie", "Disk Per Movie", "Total"};
+    protected Vector data = DiskController.loadDisk();
 
     @Override
     public int getColumnCount() {

@@ -66,10 +66,32 @@ public class Validator {
         return true;
     }
     
+    // validate email
+    public static boolean validateYear(JTextField txtYear) {
+        if (!txtYear.getText().matches("^([1][9]\\d\\d|20[0-1][0-2])$")) {
+            showMessage("Year is not valid");
+            txtYear.setBackground(new Color(250, 255, 168));
+            txtYear.requestFocus();
+            return false;
+        }
+        return true;
+    }
+    
     // validate float number
     public static boolean validateFloatField(JTextField txtNumber) {
         if (!txtNumber.getText().matches("[\\d]{1,3}(\\.[\\d]{1,5})?")) {
             showMessage("Input is not valid float number");
+            txtNumber.setBackground(new Color(250, 255, 168));
+            txtNumber.requestFocus();
+            return false;
+        }
+        return true;
+    }
+    
+    // validate int number
+    public static boolean validateIntField(JTextField txtNumber) {
+        if (!txtNumber.getText().matches("^[0-9]{1,10}$")) {
+            showMessage("Input is not valid int number");
             txtNumber.setBackground(new Color(250, 255, 168));
             txtNumber.requestFocus();
             return false;

@@ -14,6 +14,11 @@ import org.hibernate.criterion.Restrictions;
 import databasemanager.Person;
 
 import admin.DAO.HibernateUtil;
+import admin.bean.FilmCompany;
+import admin.bean.FilmDirector;
+import admin.bean.FilmDirectorPrimaryKey;
+import admin.bean.FilmStar;
+import admin.bean.FilmStarPrimaryKey;
 import admin.view.CustomMessageDialog;
 
 
@@ -21,7 +26,7 @@ public class PersonController {
 	static HibernateUtil hu = new HibernateUtil();
 	static SessionFactory sf = hu.getSessionFactory();
 	
-	public static Vector<Person> searchPerson(String keyword) {
+	public static Vector<Person> searchPerson2(String keyword) {
 		Session session = sf.openSession();
 		Criteria criteria = session.createCriteria(Person.class);
 		keyword = keyword.trim();
@@ -47,7 +52,7 @@ public class PersonController {
 		return vt;
 	}
 
-	public static Vector<Person> searchPerson2(String keyword) {
+	public static Vector<Person> searchPerson(String keyword) {
 		Session session = sf.openSession();
 		Criteria criteria = session.createCriteria(Person.class);
 		keyword = keyword.trim();
@@ -55,10 +60,10 @@ public class PersonController {
 		Disjunction or = Restrictions.disjunction();
 
 		or.add(Restrictions.like("name", "%" + keyword + "%"));
-		or.add(Restrictions.like("day", "%" + keyword + "%"));
-		or.add(Restrictions.like("year", "%" + keyword + "%"));
 		or.add(Restrictions.like("sex", "%" + keyword + "%"));
 		or.add(Restrictions.like("born", "%" + keyword + "%"));
+		or.add(Restrictions.like("year", "%" + keyword + "%"));
+		or.add(Restrictions.like("day", "%" + keyword + "%"));
 		criteria.add(or);
 		Vector vt = new Vector();
 		List result = new Vector<Person>();
@@ -160,8 +165,8 @@ public class PersonController {
         try {
             session.getTransaction().begin();
             person = (Person) session.get(Person.class, id);
-            //session.getTransaction().commit();
-            //session.close();
+            session.getTransaction().commit();
+            session.close();
         } catch (Exception e) {
             if (session.getTransaction().isActive()) {
                 session.getTransaction().rollback();
@@ -173,9 +178,34 @@ public class PersonController {
 	
     public static boolean delete(String id) {
     	Session session = sf.openSession();
+		Criteria criteria2 = session.createCriteria(FilmStar.class);
+		Criteria criteria3 = session.createCriteria(FilmDirector.class);
+		criteria2.add(Restrictions.eq("filmStarPrimaryKey.sid", id));
+		criteria3.add(Restrictions.eq("filmDirectorPrimaryKey.did", id));
         try {
             session.getTransaction().begin();
             Person person = (Person) session.get(Person.class, id);
+            ArrayList<FilmStar> result2 = (ArrayList) criteria2.list();
+            ArrayList<FilmDirector> result3 = (ArrayList) criteria3.list();
+			new CustomMessageDialog(
+					null,
+					true,
+					"Warning",
+					"<html>All records of star,director with this person will be deleted. Still continue?</html>",
+					CustomMessageDialog.CONFIRM);
+			if (CustomMessageDialog.STATUS == CustomMessageDialog.CANCEL) {
+				return false;
+			}
+            if(result2!=null){
+            	for(FilmStar tmp : result2){
+            		session.delete(tmp);
+            	}
+            }
+            if(result3!=null){
+            	for(FilmDirector tmp : result3){
+            		session.delete(tmp);
+            	}
+            }
             session.delete(person);
             session.getTransaction().commit();
             session.close();

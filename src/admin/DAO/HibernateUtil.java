@@ -3,7 +3,6 @@ package admin.DAO;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.AnnotationConfiguration;
 import org.hibernate.tool.hbm2ddl.SchemaExport;
-import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 
 public class HibernateUtil {
 	private static final SessionFactory sessionFactory = buildSessionFactory();
@@ -26,9 +25,8 @@ public class HibernateUtil {
 	public boolean createTable(Class name){
 		AnnotationConfiguration config = new AnnotationConfiguration();
 		config.addAnnotatedClass(name);
-	
 		config.configure("/admin/DAO/hibernate.cfg.xml");
-		new SchemaUpdate(config).execute(true,true);
+		new SchemaExport(config).drop(false, false);
 		return true;
 	}
 }

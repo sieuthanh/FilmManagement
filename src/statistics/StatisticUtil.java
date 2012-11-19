@@ -41,6 +41,7 @@ public class StatisticUtil {
 			results.add(sum);
 		}
 		session.close();
+		saveStatisticsEachDayInMonth(results, month, year);
 		return results;
 	}
 
@@ -52,7 +53,7 @@ public class StatisticUtil {
 		SessionFactory sf = hu.getSessionFactory();
 		Session session = sf.openSession();
 		int i = 0;
-		int MonthSumMoney = 0;
+		int monthSumMoney = 0;
 		Criteria criteria = session.createCriteria(DayStatistics.class);
 		criteria.add(Restrictions.eq("month", month)).add(
 				Restrictions.eq("year", year));
@@ -73,11 +74,17 @@ public class StatisticUtil {
 			ds.setYear(year);
 			ds.setSum(eachDayInMonthStatisticResult.get(i));
 			session.merge(ds);
-			MonthSumMoney = MonthSumMoney
+			monthSumMoney = monthSumMoney
 					+ eachDayInMonthStatisticResult.get(i);
 		}
+		Criteria criteria2 = session.createCriteria(MonthStatistics.class);
+		criteria2.add(Restrictions.eq("month", month)).add(Restrictions.eq("year", year));
+		MonthStatistics tmp = (MonthStatistics) criteria2.uniqueResult();
+		if(tmp !=null){
+			session.delete(tmp);
+		}
 		MonthStatistics ms = new MonthStatistics();
-		ms.setSum(MonthSumMoney);
+		ms.setSum(monthSumMoney);
 		ms.setYear(year);
 		ms.setMonth(month);
 		session.merge(ms);

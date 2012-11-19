@@ -1,13 +1,21 @@
 package databasemanager;
 
 import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Vector;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 
 import admin.DAO.HibernateUtil;
 
@@ -58,20 +66,5 @@ public class Disk implements Serializable {
 		this.totalAmount = totalAmount;
 	}
 
-	public static void main(String[] args) {
-		HibernateUtil hu = new HibernateUtil();
-		if (hu.createTable(Disk.class)) {
-			System.out.println("Success");
-		}
-		SessionFactory sf = hu.getSessionFactory();
-		Session session = sf.openSession();
-		Disk d = new Disk("1290400", "3", "20");
-		Disk d1 = new Disk("1179034", "5", "10");
-		Disk d2 = new Disk("1190080", "3", "30");
-		session.save(d);
-		session.save(d1);
-		session.save(d2);
-		session.beginTransaction().commit();
-		session.close();
-	}
+
 }

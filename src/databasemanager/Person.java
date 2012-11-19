@@ -54,6 +54,11 @@ public class Person {
 		this.isstar = "No information";
 	}
 
+	public Person(String name) {
+		// TODO Auto-generated constructor stub
+		this.name = name;
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}

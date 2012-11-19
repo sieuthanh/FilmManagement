@@ -11,6 +11,8 @@ import javax.swing.table.*;
 import javax.swing.text.*;
 import javax.swing.plaf.basic.*;
 
+import org.jdesktop.swingx.JXTable;
+
 import databasemanager.DatabaseManager;
 import databasemanager.Movie;
 
@@ -33,7 +35,7 @@ public class PagingTable2 extends JPanel {
 //    };
 	MyManagerTableModel model = new MyManagerTableModel();
     private final TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
-    private final JTable table = new JTable(model) {
+    private final JXTable table = new JXTable(model) {
         @Override public Component prepareRenderer(TableCellRenderer tcr, int row, int column) {
             Component c = super.prepareRenderer(tcr, row, column);
             if(isRowSelected(row)) {
@@ -65,7 +67,7 @@ public class PagingTable2 extends JPanel {
 //
 //			}
 //		}
-        initLinkBox(100, 1);
+        initLinkBox(10, 1);
 
         add(box, BorderLayout.NORTH);
         add(new JScrollPane(table));

@@ -13,7 +13,9 @@ public class FilmStarPrimaryKey implements Serializable {
 		this.fid = fid;
 		this.sid = sid;
 	}
-
+public FilmStarPrimaryKey() {
+	// TODO Auto-generated constructor stub
+}
 	public String getFid() {
 		return fid;
 	}

@@ -26,6 +26,8 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import moviedisplaypanel.WriteFile;
+
 import org.jdesktop.beansbinding.BeanProperty;
 import org.jdesktop.beansbinding.BindingGroup;
 import org.jdesktop.beansbinding.Bindings;
@@ -35,17 +37,20 @@ import org.jdesktop.swingx.decorator.HighlightPredicate;
 import org.jdesktop.swingx.decorator.Highlighter;
 import org.jdesktop.swingx.decorator.HighlighterFactory;
 
+import sun.java2d.Disposer;
+
 import admin.controller.FilmController;
 import admin.controller.PersonController;
 
 
 
-public class AdminPersonList2 extends javax.swing.JPanel {
+public class AddDirector2 extends javax.swing.JFrame{
 
     private static MyPersonTableModel2 model = new MyPersonTableModel2();
     Highlighter simpleStripHL = HighlighterFactory.createSimpleStriping();
     MyTableFilter filterController = null;
     MyTableScroller ts = null;
+    //private static String selectedfID;
     private static TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);;
     private static int LR_PAGE_SIZE = 5;
     private static final LinkViewRadioButtonUI ui = new LinkViewRadioButtonUI();
@@ -54,7 +59,8 @@ public class AdminPersonList2 extends javax.swing.JPanel {
     private static boolean componentListenerIsOn = false;
 
     /** Creates new form ManageManager */
-    public AdminPersonList2() {
+    public AddDirector2() {
+    	//this.selectedfID = selectedID;
         initComponents();
         customizeTable();
         setCountLabel();
@@ -74,9 +80,9 @@ public class AdminPersonList2 extends javax.swing.JPanel {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 if (jxTable.getSelectedRow() != -1) {
-                    btnEdit.setEnabled(true);
+                    btnAdd.setEnabled(true);
                 } else {
-                    btnEdit.setEnabled(false);
+                    btnAdd.setEnabled(false);
                 }
             }
         });
@@ -93,7 +99,7 @@ public class AdminPersonList2 extends javax.swing.JPanel {
             }
         });
         jxTable.getColumn(0).setCellRenderer(new MyTableRenderer.IDRenderer());
-        //jxTable.setRowSorter(sorter);
+       // jxTable.setRowSorter(sorter);
 		//initLinkBox(100,1);     
     }
 
@@ -104,8 +110,8 @@ public class AdminPersonList2 extends javax.swing.JPanel {
 
     public static void reloadTable() {
         jxTable.setModel(new MyPersonTableModel2());
-        //jxTable.setRowSorter(sorter);
-		//initLinkBox(100,1);     
+        jxTable.setRowSorter(sorter);
+		initLinkBox(100,1);     
         jxTable.getColumn(0).setCellRenderer(new MyTableRenderer.IDRenderer());
         setCountLabel();
     }
@@ -137,7 +143,6 @@ public class AdminPersonList2 extends javax.swing.JPanel {
 						public void warn() {
 							String text = txtSearch2.getText();
 							model.personList = PersonController.searchPerson2(text);
-							jxTable.setModel(model);
 							//jxTable.setRowSorter(sorter);
 							//initLinkBox(100,1);     
 							jxTable.getColumn(0).setCellRenderer(new MyTableRenderer.IDRenderer());
@@ -259,16 +264,16 @@ public class AdminPersonList2 extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         lbCountManager = new javax.swing.JLabel();
         btnInsert = new javax.swing.JButton();
-        btnEdit = new javax.swing.JButton();
-        btnRefresh = new javax.swing.JButton();
+        btnAdd = new javax.swing.JButton();
+        btnExit = new javax.swing.JButton();
         //txtSearch = new org.jdesktop.swingx.JXSearchField();
 
         setBackground(new java.awt.Color(255, 255, 255));
-        setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
+        //setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
         //jxTable.setRowSorter(sorter);
         jxTable.setModel(model);
-        jxTable.setToolTipText("Double click to edit");
+        jxTable.setToolTipText("Double click to Add");
         jxTable.setColumnControlVisible(true);
         jxTable.setHighlighters(simpleStripHL);
         jxTable.setShowGrid(false);
@@ -297,22 +302,22 @@ public class AdminPersonList2 extends javax.swing.JPanel {
             }
         });
 
-        btnEdit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add.png"))); // NOI18N
-        btnEdit.setText("Add");
-        btnEdit.setEnabled(false);
-        btnEdit.addActionListener(new java.awt.event.ActionListener() {
+        btnAdd.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add.png"))); // NOI18N
+        btnAdd.setText("Add");
+        btnAdd.setEnabled(false);
+        btnAdd.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnEditActionPerformed(evt);
+                btnAddActionPerformed(evt);
             }
         });
 
 
-        btnRefresh.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/refresh.png"))); // NOI18N
-        btnRefresh.setText("Refresh");
-        btnRefresh.setMargin(new java.awt.Insets(2, 8, 2, 8));
-        btnRefresh.addActionListener(new java.awt.event.ActionListener() {
+        btnExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/exit.png"))); // NOI18N
+        btnExit.setText("Exit");
+        btnExit.setMargin(new java.awt.Insets(2, 8, 2, 8));
+        btnExit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnRefreshActionPerformed(evt);
+                btnExitActionPerformed(evt);
             }
         });
         
@@ -329,9 +334,9 @@ public class AdminPersonList2 extends javax.swing.JPanel {
                 .addGap(125, 125, 125)
                 .addComponent(btnInsert)
                 .addGap(66, 66, 66)
-                .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 70, Short.MAX_VALUE)
-                .addComponent(btnRefresh)
+                .addComponent(btnExit)
                 .addGap(122, 122, 122))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
@@ -360,8 +365,8 @@ public class AdminPersonList2 extends javax.swing.JPanel {
                 .addComponent(box)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnInsert)
-                    .addComponent(btnRefresh)
-                    .addComponent(btnEdit, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnExit)
+                    .addComponent(btnAdd, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -371,43 +376,44 @@ public class AdminPersonList2 extends javax.swing.JPanel {
         // TODO add your handling code here:
 
         if (evt.getClickCount() >= 2 && jxTable.getSelectedRow() != -1) {
-            editManager();
+            AddManager();
         }
     }//GEN-LAST:event_jxTableMouseClicked
 
     //<editor-fold defaultstate="collapsed" desc="Actions on button click">            
-    private void btnRefreshActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRefreshActionPerformed
+    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
         // TODO add your handling code here:
-        reloadTable();
-    }//GEN-LAST:event_btnRefreshActionPerformed
+        setVisible(true);
+    }//GEN-LAST:event_btnExitActionPerformed
 
-    private void btnEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEditActionPerformed
+    private void btnAddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddActionPerformed
         // TODO add your handling code here:
-        editManager();
-    }//GEN-LAST:event_btnEditActionPerformed
+        AddManager();
+    }//GEN-LAST:event_btnAddActionPerformed
 
     private void btnInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertActionPerformed
         // TODO add your handling code here:
         if (CustomMessageDialog.STATUS == CustomMessageDialog.CANCEL) {
-        	addManager();
+        	insertManager();
         }
     }//GEN-LAST:event_btnInsertActionPerformed
     //</editor-fold>
 
-    private void addManager() {
+    private void insertManager() {
         new AddNewPerson();
     }
     
-    // this method handles button Edit action and click event on table
-    private void editManager() {
-//        int selected = jxTable.convertRowIndexToModel(jxTable.getSelectedRow());
-//        String selectedID = (String) jxTable.getModel().getValueAt(selected, 6);
-//        new EditPerson(selectedID);
+    // this method handles button Add action and click event on table
+    private void AddManager() {
+        int selected = jxTable.convertRowIndexToModel(jxTable.getSelectedRow());
+        String selectedID = (String) jxTable.getModel().getValueAt(selected, 0);
+        AddNewMovie.reloadDirectorTable(selectedID);    
+        new CustomMessageDialog(null, true, "Done!", "Add sucessfully!", CustomMessageDialog.DONE);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnEdit;
+    private javax.swing.JButton btnAdd;
     private javax.swing.JButton btnInsert;
-    private javax.swing.JButton btnRefresh;
+    private javax.swing.JButton btnExit;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JScrollPane jScrollPane1;

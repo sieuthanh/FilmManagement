@@ -4,16 +4,24 @@
  */
 package admin.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
+
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Disjunction;
+import org.hibernate.criterion.Restrictions;
 
 import databasemanager.Company;
 import databasemanager.Movie;
 
 import admin.DAO.HibernateUtil;
+import admin.bean.FilmCompany;
+import admin.bean.FilmDirector;
+import admin.bean.FilmStar;
 import admin.view.CustomMessageDialog;
 
 /**
@@ -24,6 +32,29 @@ public class CompanyController {
 	static HibernateUtil hu = new HibernateUtil();
 	static SessionFactory sf = hu.getSessionFactory();
 
+	
+	public static Vector<Company> searchCompany(String keyword) {
+		Session session = sf.openSession();
+		Criteria criteria = session.createCriteria(Company.class);
+		keyword = keyword.trim();
+
+		Disjunction or = Restrictions.disjunction();
+
+		or.add(Restrictions.like("name", "%" + keyword + "%"));
+		criteria.add(or);
+		Vector vt = new Vector();
+		List result = new Vector<Company>();
+		result = criteria.list();
+		for (Object o : result) {
+            Company company = (Company) o;
+            Vector temp = new Vector();
+            temp.add(company.getId());
+            temp.add(company.getName());
+            vt.add(temp);
+        }
+		return vt;
+	}
+	
     // load data, then pass it to company table model
     public static Vector loadCompany() {
     	Vector vt = new Vector();
@@ -35,6 +66,29 @@ public class CompanyController {
                 Company company = (Company) o;
                 Vector temp = new Vector();
                 temp.add(company.getId());
+                temp.add(company.getName());
+                vt.add(temp);
+            }
+            session.getTransaction().commit();
+            session.close();
+        } catch (Exception e) {
+            if (session.getTransaction().isActive()) {
+                session.getTransaction().rollback();
+            }
+            e.printStackTrace();
+        }
+        return vt;
+    }
+    
+    public static Vector loadCompany2() {
+    	Vector vt = new Vector();
+        Session session = sf.openSession();
+        try {
+            session.getTransaction().begin();
+            List list = session.createQuery("from Company").list();
+            for (Object o : list) {
+                Company company = (Company) o;
+                Vector temp = new Vector();
                 temp.add(company.getName());
                 vt.add(temp);
             }
@@ -102,12 +156,20 @@ public class CompanyController {
     // delete a company
     public static boolean delete(String id) {
     	Session session = sf.openSession();
+		Criteria criteria = session.createCriteria(FilmCompany.class);
+		criteria.add(Restrictions.eq("filmCompanyPrimaryKey.sid", id));
         try {
             session.getTransaction().begin();
             Company company = (Company) session.get(Company.class, id);
+            ArrayList<FilmCompany> result = (ArrayList) criteria.list();
             new CustomMessageDialog(null, true, "Warning", "<html>All records of movie on this company will be deleted. Still continue?</html>", CustomMessageDialog.CONFIRM);
             if (CustomMessageDialog.STATUS == CustomMessageDialog.CANCEL) {
                 return false;
+            }            
+            if(result!=null){
+            	for(FilmCompany tmp : result){
+            		session.delete(tmp);
+            	}
             }
             session.delete(company);
             session.getTransaction().commit();

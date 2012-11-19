@@ -16,7 +16,7 @@ import admin.controller.CompanyController;
 public class MyCompanyTableModel extends AbstractTableModel {
     
     private String[] columnNames = {"Company ID", "Company Name"};
-    private Vector data = CompanyController.loadCompany();
+    protected Vector data = CompanyController.loadCompany();
 
     @Override
     public int getColumnCount() {

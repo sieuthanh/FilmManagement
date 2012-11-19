@@ -46,7 +46,8 @@ public class AdminPersonList extends javax.swing.JPanel {
     Highlighter simpleStripHL = HighlighterFactory.createSimpleStriping();
     MyTableFilter filterController = null;
     MyTableScroller ts = null;
-    private static TableRowSorter<TableModel> sorter;
+    private static PersonController search = new PersonController();
+    private static TableRowSorter<TableModel> sorter = new TableRowSorter<TableModel>(model);
     private static int LR_PAGE_SIZE = 5;
     private static final LinkViewRadioButtonUI ui = new LinkViewRadioButtonUI();
     // ensure only 1 component listener is added to jtable
@@ -58,7 +59,6 @@ public class AdminPersonList extends javax.swing.JPanel {
         initComponents();
         customizeTable();
         setCountLabel();
-        updatePaging();
     }
 
     // Customize table
@@ -97,6 +97,9 @@ public class AdminPersonList extends javax.swing.JPanel {
         
         //jxTable.setDefaultRenderer("".getClass(), new MyTableRenderer());
         jxTable.getColumn(0).setCellRenderer(new MyTableRenderer.IDRenderer());
+        //sorter = new TableRowSorter<TableModel>(model);
+        //jxTable.setRowSorter(sorter);
+        //initLinkBox(100,1);
 //        filterController = new MyTableFilter(jxTable);
 //        BindingGroup filterGroup = new BindingGroup();
 //        filterGroup.addBinding(Bindings.createAutoBinding(READ,
@@ -112,7 +115,10 @@ public class AdminPersonList extends javax.swing.JPanel {
 
     public static void reloadTable() {
         jxTable.setModel(new MyPersonTableModel());
-        jxTable.setRowSorter(sorter);
+        //sorter = new TableRowSorter<TableModel>(model);
+    	//jxTable.removeAll();
+        //jxTable.setRowSorter(sorter);
+        //initLinkBox(100,1);
         jxTable.getColumn(0).setCellRenderer(new MyTableRenderer.IDRenderer());
         setCountLabel();
     }
@@ -143,8 +149,11 @@ public class AdminPersonList extends javax.swing.JPanel {
 
 						public void warn() {
 							String text = txtSearch2.getText();
-							model.personList = PersonController.searchPerson(text);
+							model.personList = search.searchPerson(text);
 							jxTable.setModel(model);
+							//jxTable.setRowSorter(sorter);
+							//initLinkBox(100,1);     
+							jxTable.getColumn(0).setCellRenderer(new MyTableRenderer.IDRenderer());
 						}
 					});
 
@@ -153,18 +162,13 @@ public class AdminPersonList extends javax.swing.JPanel {
 	}
 
     
-    protected void updatePaging() {
-        //if ((text == null)) {
-        	sorter = new TableRowSorter<TableModel>(model);
-        	jxTable.setRowSorter(sorter);
-        //} else {
-          //  sorter = null;
-        //}
-        initLinkBox(100,1);
-        
+    protected void updatePaging() {        
+       	sorter = new TableRowSorter<TableModel>(model);
+        jxTable.setRowSorter(sorter);
+        initLinkBox(100,1);        
     }
     
-    protected void initLinkBox(final int itemsPerPage, final int currentPageIndex) {
+    protected static void initLinkBox(final int itemsPerPage, final int currentPageIndex) {
         //assert currentPageIndex>0;
         sorter.setRowFilter(makeRowFilter(itemsPerPage, currentPageIndex-1));
         ArrayList<JRadioButton> paginationButtons = new ArrayList<JRadioButton>();
@@ -202,7 +206,7 @@ public class AdminPersonList extends javax.swing.JPanel {
         box.repaint();
         paginationButtons.clear();
     }
-    protected JRadioButton makeRadioButton(final int itemsPerPage, final int current, final int target) {
+    protected static JRadioButton makeRadioButton(final int itemsPerPage, final int current, final int target) {
         JRadioButton radio = new JRadioButton(String.valueOf(target+1)) {
             @Override protected void fireStateChanged() {
                 ButtonModel model = getModel();
@@ -228,7 +232,7 @@ public class AdminPersonList extends javax.swing.JPanel {
         });
         return radio;
     }
-    protected JRadioButton makePNRadioButton(final int itemsPerPage, final int target, String title) {
+    protected static JRadioButton makePNRadioButton(final int itemsPerPage, final int target, String title) {
         JRadioButton radio = new JRadioButton(title);
         radio.setForeground(Color.BLUE);
         radio.setUI(ui);
@@ -239,7 +243,7 @@ public class AdminPersonList extends javax.swing.JPanel {
         });
         return radio;
     }
-    protected RowFilter<TableModel,Integer> makeRowFilter(final int itemsPerPage, final int target) {
+    protected static RowFilter<TableModel,Integer> makeRowFilter(final int itemsPerPage, final int target) {
         return new RowFilter<TableModel,Integer>() {
             @Override public boolean include(Entry<? extends TableModel, ? extends Integer> entry) {
                 int ei = entry.getIdentifier();
@@ -271,7 +275,9 @@ public class AdminPersonList extends javax.swing.JPanel {
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(javax.swing.BorderFactory.createEmptyBorder(1, 1, 1, 1));
 
+        //sorter = new TableRowSorter<TableModel>(model);
         //jxTable.setRowSorter(sorter);
+        //initLinkBox(100,1);
         jxTable.setModel(model);
         jxTable.setToolTipText("Double click to edit");
         jxTable.setColumnControlVisible(true);
@@ -412,7 +418,7 @@ public class AdminPersonList extends javax.swing.JPanel {
             jxTable.removeComponentListener(ts);
             componentListenerIsOn = false;
         }
-        if (PersonController.delete(selectedID)) {
+        if (search.delete(selectedID)) {
             new CustomMessageDialog(null, true, "Done!", "Deleted sucessfully!", CustomMessageDialog.DONE);
             reloadTable();
         }
@@ -438,7 +444,7 @@ public class AdminPersonList extends javax.swing.JPanel {
     // this method handles button Edit action and click event on table
     private void editManager() {
         int selected = jxTable.convertRowIndexToModel(jxTable.getSelectedRow());
-        String selectedID = (String) jxTable.getModel().getValueAt(selected, 6);
+        String selectedID = (String) jxTable.getModel().getValueAt(selected, 5);
         new EditPerson(selectedID);
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -453,6 +459,6 @@ public class AdminPersonList extends javax.swing.JPanel {
     public static javax.swing.JLabel lbCountManager;
     private org.jdesktop.swingx.JXSearchField txtSearch;
     protected JTextField txtSearch2;
-    protected Box box = Box.createHorizontalBox();
+    protected static Box box = Box.createHorizontalBox();
     // End of variables declaration//GEN-END:variables
 }

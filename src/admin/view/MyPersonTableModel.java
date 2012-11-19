@@ -18,7 +18,7 @@ import admin.controller.PersonController;
 public class MyPersonTableModel extends AbstractTableModel {
 
 	private String[] columnNames = {"Name", "Sex", "Place Of Birth",
-			"Birthday", "BirthYear", "Id", "Director", "Star" };
+			"BirthYear", "Birthday", "Id", "Director", "Star" };
 	protected Vector personList = PersonController.getPersonList();
 
     @Override
@@ -63,11 +63,7 @@ public class MyPersonTableModel extends AbstractTableModel {
     public boolean isCellEditable(int row, int col) {
         //Note that the data/cell address is constant,
         //no matter where the cell appears onscreen.
-    	if (col < 8) {
             return false;
-        } else {
-            return true;
-        }
     }
 
 }

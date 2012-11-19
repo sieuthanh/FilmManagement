@@ -4,7 +4,7 @@
  */
 
 /*
- * AddNewLabour.java
+ * EditLabour.java
  *
  * Created on Nov 1, 2011, 1:24:03 AM
  */
@@ -16,6 +16,8 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -25,8 +27,11 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 import javax.swing.text.JTextComponent;
 
+import moviedisplaypanel.ReadFile;
 import moviedisplaypanel.WriteFile;
 
 import org.jdesktop.swingx.JXTable;
@@ -38,25 +43,31 @@ import org.jdesktop.swingx.decorator.HighlighterFactory;
 
 import databasemanager.Company;
 import databasemanager.DatabaseManager;
+import databasemanager.HotMovie;
+import databasemanager.Movie;
 import databasemanager.Person;
 
-
+import admin.bean.FilmGenre;
+import admin.bean.FilmGenrePrimaryKey;
+import admin.controller.CompanyController;
 import admin.controller.FilmController;
+import admin.controller.PersonController;
 
 /**
  *
  * @author CodeBlue
  */
-public class AddNewMovie extends javax.swing.JDialog {
+public class EditMovie extends javax.swing.JDialog {
 
     Highlighter simpleStripHL = HighlighterFactory.createSimpleStriping();
+    private static String selectedID;
     String path = "data/Films/";
+    static DatabaseManager databasemanager = new DatabaseManager();
+    MyTableScroller ts = null;
     private final static String[] columnNames = {"Company List"};
     private final static String[] columnNames2 = {"Star List"};
     private final static String[] columnNames3 = {"Director List"};
     private static final Color evenColor = new Color(240, 255, 250);
-    MyTableScroller ts = null;
-    static DatabaseManager databasemanager = new DatabaseManager();
     private final static DefaultTableModel companyModel = new DefaultTableModel(null, columnNames) {
     	@Override public Class<?> getColumnClass(int column) {
          	return (column==0)?Integer.class:Object.class;
@@ -111,20 +122,71 @@ public class AddNewMovie extends javax.swing.JDialog {
     		return c;
     	}
     };
-
-    /** Creates new form AddNewLabour */
-    public AddNewMovie() {
+    
+    
+    /** Creates new form EditLabour */
+    public EditMovie(String selectedID) {
         super();
+        this.selectedID = selectedID;
+		LinkedList listcompany = databasemanager.getCompanyByMovie2(selectedID);
+		for (int i = 0; i < listcompany.size(); i++) {
+			Company com = (Company) listcompany.get(i);
+			companyModel.addRow(new Object[] { com.getName()});
+		}
+		LinkedList liststar = databasemanager.getStarByMovie2(selectedID);
+		for (int i = 0; i < liststar.size(); i++) {
+			Person person = (Person) liststar.get(i);
+			starModel.addRow(new Object[] { person.getName()});
+		}
+		LinkedList listdir = databasemanager.getDirectorByMovie2(selectedID);
+		for (int i = 0; i < listdir.size(); i++) {
+			Person person2 = (Person) listdir.get(i);
+			directorModel.addRow(new Object[] { person2.getName()});
+		}
         initComponents();
         Image icon = getToolkit().getImage(getClass().getResource("/images/app_icon_32.png"));
-        setLocation(210, 50);
         setIconImage(icon);
+        setLocation(210, 50);
         setVisible(true);
         customizeCompanyTable();
-        customizeDirectorTable();
         customizeStarTable();
+        customizeDirectorTable();
+        fillFields();
     }
 
+    // fill fields on dialog
+    private void fillFields() {
+    	path = path + selectedID + "/";
+    	ReadFile rf = new ReadFile(path + "Short_Des.txt");
+    	ReadFile rf2 = new ReadFile(path + "Long_Des.txt");
+        Movie movie = FilmController.getMovie(selectedID);
+		LinkedList gen = databasemanager.getMovieGenres(selectedID);
+		String genre = "";
+		for (int i = 0; i < gen.size(); i++) {
+			genre += (String) gen.get(i) + ", ";
+		}
+		genre = genre.substring(0, genre.length() - 2);
+        boolean hm = FilmController.checkHotMovie(selectedID);
+        boolean nm = FilmController.checkNewMovie(selectedID);
+        txtID.setText(selectedID);
+        txtName.setText(movie.getName());
+        txtYear.setText(String.valueOf(movie.getYear()));
+        txtCountry.setText(movie.getCountry());
+        txtRatting.setText(String.valueOf(movie.getRating()));
+        txtRuntime.setText(String.valueOf(movie.getRuntime()));
+        txtGenre.setText(genre);
+		taShortStory.setText(rf.ReadAllFile());
+		taLongStory.setText(rf2.ReadAllFile());
+
+        if (hm) {
+            chkHotMovie.setSelected(true);
+        }
+        if (nm) {
+            chkNewMovie.setSelected(true);
+        }
+
+    }
+    
     private void customizeCompanyTable() {
         jxCompany.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         // set table rollover color
@@ -234,19 +296,28 @@ public class AddNewMovie extends javax.swing.JDialog {
         jxDirector.getColumn(0).setCellRenderer(new MyTableRenderer.IDRenderer());
     }
 
-    protected static void reloadCompanyTable(String selectedID) {
-		String listcompany = databasemanager.getCompanyName(selectedID);
-		companyModel.addRow(new Object[] { listcompany});
+    protected static void reloadCompanyTable() {
+		LinkedList listcompany = databasemanager.getCompanyByMovie2(selectedID);
+		for (int i = 0; i < listcompany.size(); i++) {
+			Company com = (Company) listcompany.get(i);
+			companyModel.addRow(new Object[] { com.getName()});
+		}
         jxCompany.getColumn(0).setCellRenderer(new MyTableRenderer.IDRenderer());
     }
-    protected static void reloadStarTable(String selectedID) {
-		String liststar = databasemanager.getPersonName(selectedID);
-		starModel.addRow(new Object[] { liststar});
+    protected static void reloadStarTable() {
+		LinkedList liststar = databasemanager.getStarByMovie2(selectedID);
+		for (int i = 0; i < liststar.size(); i++) {
+			Person person = (Person) liststar.get(i);
+			starModel.addRow(new Object[] { person.getName()});
+		}
         jxStar.getColumn(0).setCellRenderer(new MyTableRenderer.IDRenderer());
     }
-    protected static void reloadDirectorTable(String selectedID) {
-		String listdir = databasemanager.getPersonName(selectedID);
-		directorModel.addRow(new Object[] { listdir});
+    protected static void reloadDirectorTable() {
+		LinkedList listdir = databasemanager.getDirectorByMovie2(selectedID);
+		for (int i = 0; i < listdir.size(); i++) {
+			Person person2 = (Person) listdir.get(i);
+			directorModel.addRow(new Object[] { person2.getName()});
+		}
         jxDirector.getColumn(0).setCellRenderer(new MyTableRenderer.IDRenderer());
     }
     /** This method is called from within the constructor to
@@ -258,7 +329,7 @@ public class AddNewMovie extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
+    	buttonGroup1 = new javax.swing.ButtonGroup();
         
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
@@ -282,6 +353,7 @@ public class AddNewMovie extends javax.swing.JDialog {
         jLabelStar = new javax.swing.JLabel();
         jLabelDirector = new javax.swing.JLabel();
         jLabelBorn = new javax.swing.JLabel();
+        jLabelGenre = new javax.swing.JLabel();
         
         txtID = new javax.swing.JTextField();
         txtYear = new javax.swing.JTextField();
@@ -289,7 +361,7 @@ public class AddNewMovie extends javax.swing.JDialog {
         txtRuntime = new javax.swing.JTextField();
         txtName = new javax.swing.JTextField();
         txtCountry = new javax.swing.JTextField();
-        txtCompany = new javax.swing.JTextField();        
+        txtGenre = new javax.swing.JTextField();
         
         chkHotMovie = new javax.swing.JCheckBox();
         chkNewMovie = new javax.swing.JCheckBox();
@@ -304,24 +376,27 @@ public class AddNewMovie extends javax.swing.JDialog {
         taDirector = new javax.swing.JTextArea();
         taShortStory = new javax.swing.JTextArea();
         taLongStory = new javax.swing.JTextArea();
+        taCompany = new javax.swing.JTextArea();
 
-        btnInsert = new javax.swing.JButton();
-        btnCancel = new javax.swing.JButton();
         btnAddStar = new javax.swing.JButton();
         btnDelStar = new javax.swing.JButton();
         btnAddDirector = new javax.swing.JButton();
         btnDelDirector = new javax.swing.JButton();
         btnAddCompany = new javax.swing.JButton();
         btnDelCompany = new javax.swing.JButton(); 
+        btnUpdate = new javax.swing.JButton();
+        btnExit = new javax.swing.JButton();
+        
+        //jxCompany = new org.jdesktop.swingx.JXTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Add new movie");
+        setTitle("Update movie");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jLabelHeading.setFont(new java.awt.Font("Tahoma", 1, 24));
         jLabelHeading.setForeground(new java.awt.Color(0, 102, 153));
-        jLabelHeading.setText("Add New Movie");
+        jLabelHeading.setText("Update Movie");
 
         jPanel2.setBackground(new java.awt.Color(255, 255, 255));
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Movie Information", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12), new java.awt.Color(153, 0, 0))); // NOI18N
@@ -349,6 +424,10 @@ public class AddNewMovie extends javax.swing.JDialog {
         jLabelRuntime.setFont(new java.awt.Font("Tahoma", 0, 12));
         jLabelRuntime.setForeground(new java.awt.Color(51, 51, 51));
         jLabelRuntime.setText("Runtime");
+        
+        jLabelGenre.setFont(new java.awt.Font("Tahoma", 0, 12));
+        jLabelGenre.setForeground(new java.awt.Color(51, 51, 51));
+        jLabelGenre.setText("Genre");
 
         txtID.setFont(new java.awt.Font("Tahoma", 0, 12));
         txtID.setForeground(new java.awt.Color(0, 0, 102));
@@ -367,6 +446,9 @@ public class AddNewMovie extends javax.swing.JDialog {
 
         txtCountry.setForeground(new java.awt.Color(0, 0, 102));
         txtCountry.setFont(new java.awt.Font("Tahoma", 0, 12));
+        
+        txtGenre.setForeground(new java.awt.Color(0, 0, 102));
+        txtGenre.setFont(new java.awt.Font("Tahoma", 0, 12));
 
         chkHotMovie.setBackground(new java.awt.Color(255, 255, 255));
         chkHotMovie.setText("Hot Movie");
@@ -398,12 +480,13 @@ public class AddNewMovie extends javax.swing.JDialog {
                             .addComponent(jLabelRank)
                             .addComponent(jLabelName)
                             .addComponent(jLabelRatting)
-                            .addComponent(jLabelRuntime))
+                            .addComponent(jLabelRuntime)
+                            .addComponent(jLabelGenre))
                         .addGap(53, 53, 53)
                         .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         	.addComponent(txtRatting, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                         	.addComponent(txtRuntime, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        	.addGroup(jPanel2Layout.createSequentialGroup()
+                        	.addComponent(txtGenre, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)                        	.addGroup(jPanel2Layout.createSequentialGroup()
                         			.addComponent(chkHotMovie)
                         			.addComponent(chkNewMovie))
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -453,6 +536,10 @@ public class AddNewMovie extends javax.swing.JDialog {
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabelRuntime)
                     .addComponent(txtRuntime))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabelGenre)
+                    .addComponent(txtGenre))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -490,6 +577,14 @@ public class AddNewMovie extends javax.swing.JDialog {
         jxDirector.setHighlighters(simpleStripHL);
         jxDirector.setShowGrid(false);
         jScrollPane4.setViewportView(jxDirector);
+        
+        taCompany.setColumns(20);
+        taCompany.setFont(new java.awt.Font("Verdana", 0, 12)); // NOI18N
+        taCompany.setForeground(new java.awt.Color(0, 0, 102));
+        taCompany.setLineWrap(true);
+        taCompany.setRows(3);
+        taCompany.setWrapStyleWord(true);
+        //jScrollPane5.setViewportView(taCompany);
                
         //jxCompany.setcompanyModel(companyModel);
         jxCompany.setHighlighters(simpleStripHL);
@@ -629,24 +724,6 @@ public class AddNewMovie extends javax.swing.JDialog {
                 btnDelCompanyActionPerformed(evt);
             }
         });
-        
-        btnInsert.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/add.png"))); // NOI18N
-        btnInsert.setText("Insert");
-        btnInsert.setMargin(new java.awt.Insets(2, 9, 2, 9));
-        btnInsert.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnInsertActionPerformed(evt);
-            }
-        });
-
-        btnCancel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/no.png"))); // NOI18N
-        btnCancel.setText("Cancel");
-        btnCancel.setMargin(new java.awt.Insets(2, 9, 2, 9));
-        btnCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCancelActionPerformed(evt);
-            }
-        });
 
         jPanel4.setBackground(new java.awt.Color(255, 255, 255));
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Short Story", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tahoma", 0, 12), new java.awt.Color(153, 0, 0))); // NOI18N
@@ -692,7 +769,7 @@ public class AddNewMovie extends javax.swing.JDialog {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 392, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 396, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
@@ -701,6 +778,24 @@ public class AddNewMovie extends javax.swing.JDialog {
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
                 .addContainerGap())
         );
+
+        btnUpdate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/update.png"))); // NOI18N
+        btnUpdate.setText("Update");
+        btnUpdate.setMargin(new java.awt.Insets(2, 10, 2, 10));
+        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateActionPerformed(evt);
+            }
+        });
+
+        btnExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/exit.png"))); // NOI18N
+        btnExit.setText("Exit");
+        btnExit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnExitActionPerformed(evt);
+            }
+        });
+
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -722,9 +817,9 @@ public class AddNewMovie extends javax.swing.JDialog {
                         .addComponent(jLabelHeading))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(314, 314, 314)
-                        .addComponent(btnInsert)
+                        .addComponent(btnUpdate)
                         .addGap(60, 60, 60)
-                        .addComponent(btnCancel)))
+                        .addComponent(btnExit)))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -742,8 +837,8 @@ public class AddNewMovie extends javax.swing.JDialog {
                     .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnInsert)
-                    .addComponent(btnCancel))
+                    .addComponent(btnUpdate)
+                    .addComponent(btnExit))
                 .addContainerGap())
         );
 
@@ -775,7 +870,7 @@ public class AddNewMovie extends javax.swing.JDialog {
 		//jf.setSize(800, 100);
 		jf.setVisible(true);
 		jf.setLocation(230,100);
-		//jf.add(new AddCompany2());
+		jf.add(new AddCompany(selectedID));
 		jf.pack();
 	}
 
@@ -793,7 +888,7 @@ public class AddNewMovie extends javax.swing.JDialog {
 		//jf.setSize(800, 100);
 		jf.setVisible(true);
 		jf.setLocation(230,100);
-		jf.add(new AddDirector2());
+		jf.add(new AddDirector(selectedID));
 		jf.pack();
 	}
 
@@ -804,30 +899,29 @@ public class AddNewMovie extends javax.swing.JDialog {
 
 	protected void btnAddStarActionPerformed(ActionEvent evt) {
 		// TODO Auto-generated method stub
-		new AddStar2(this);
-		//JFrame jf = new JFrame("Add Star");
-		//jf.setVisible(true);
+		JFrame jf = new JFrame("Add Star");
+		jf.setVisible(true);
 		//jf.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		//jf.setResizable(false);
 		//jf.setSize(800, 100);
-		//jf.setVisible(true);
-		//jf.setLocation(230,100);
-		//jf.add(new AddStar2());
-		//jf.pack();
+		jf.setVisible(true);
+		jf.setLocation(230,100);
+		jf.add(new AddStar(selectedID));
+		jf.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		jf.pack();
 	}
-	
-	//<editor-fold defaultstate="collapsed" desc="events on buttons">
-    private void btnInsertActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnInsertActionPerformed
+
+	//<editor-fold defaultstate="collapsed" desc="events on buttons"> 
+    private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         // TODO add your handling code here:
-        JTextComponent[] tcp = {txtID, txtName, txtYear, txtRatting, txtRuntime, 
-        		taStar, taDirector, txtCountry, taShortStory, taLongStory};
+    	JTextComponent[] tcp = {txtID, txtName, txtYear, txtRatting, txtRuntime, 
+    			txtCountry, taShortStory, taLongStory};
         if (!Validator.validateComponents(tcp)) {
             return;
         }
         String id  = txtID.getText();
         String name = txtName.getText();
         String country = txtCountry.getText();
-        String company = txtCompany.getText();
         String shortStory = taShortStory.getText();
         String longStory = taLongStory.getText();
         int year =  Integer.parseInt(txtYear.getText());
@@ -864,36 +958,24 @@ public class AddNewMovie extends javax.swing.JDialog {
                 return;
             }
         }
-        path = path + id + "/";
-        if (FilmController.insert(id, name, year, runtime, rating, country )) {
+        path = path + selectedID + "/";
+        if (FilmController.update(selectedID, name, year, runtime, rating, country )) {
         	new WriteFile(path + "Short_Des.txt", taShortStory.getText());
         	new WriteFile(path + "Long_Des.txt", taLongStory.getText());
-            new CustomMessageDialog(null, true, "Done!", "Insert sucessfully!", CustomMessageDialog.DONE);
+            new CustomMessageDialog(null, true, "Done!", "Updated sucessfully!", CustomMessageDialog.DONE);
             AdminMovieList2.reloadTable();
-            dispose();
         }
-        
-//        if (FilmController.insert("1", name, year, runtime, rating, country )) {
-//            new CustomMessageDialog(null, true, "Done!", "Added a new labour sucessfully!", CustomMessageDialog.DONE);
-//            AdminMovieList2.reloadTable();
-//            // highlight the row just inserted
-//            if (LabourDAO.isShowAll || manager.equals(LoginDAO.manager.getUserId())) {
-//                int count = ManageLabour.jxTable.getRowCount();
-//                ManageLabour.jxTable.changeSelection(count - 1, count - 1, false, false);
-//            }
-//            dispose();
-//        }
-    }//GEN-LAST:event_btnInsertActionPerformed
-
-    private void btnCancelActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCancelActionPerformed
+    }//GEN-LAST:event_btnUpdateActionPerformed
+    
+    private void btnExitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnExitActionPerformed
         // TODO add your handling code here:
         dispose();
-    }//GEN-LAST:event_btnCancelActionPerformed
-    //</editor-fold>
+    }//GEN-LAST:event_btnExitActionPerformed
 
+    //</editor-fold>
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton btnCancel;
-    private javax.swing.JButton btnInsert;
+    private javax.swing.JButton btnExit;
+    private javax.swing.JButton btnUpdate;
     private javax.swing.JButton btnAddStar;
     private javax.swing.JButton btnDelStar;
     private javax.swing.JButton btnAddDirector;
@@ -921,6 +1003,7 @@ public class AddNewMovie extends javax.swing.JDialog {
     private javax.swing.JLabel jLabelPerson;
     private javax.swing.JLabel jLabelCompany;
     private javax.swing.JLabel jLabelGender;
+    private javax.swing.JLabel jLabelGenre;
     
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -938,14 +1021,16 @@ public class AddNewMovie extends javax.swing.JDialog {
     private javax.swing.JTextArea taLongStory;
     private javax.swing.JTextArea taStar;
     private javax.swing.JTextArea taDirector;
+    private javax.swing.JTextArea taCompany;
     
-    private javax.swing.JTextField txtCompany;
-    private javax.swing.JTextField txtEmail;
     private javax.swing.JTextField txtYear;
     private javax.swing.JTextField txtID;
     private javax.swing.JTextField txtName;
     private javax.swing.JTextField txtCountry;
     private javax.swing.JTextField txtRatting;
     private javax.swing.JTextField txtRuntime;
+    private javax.swing.JTextField txtGenre;
+    
+   // private org.jdesktop.swingx.JXTable jxCompany;
     // End of variables declaration//GEN-END:variables
 }

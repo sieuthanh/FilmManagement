@@ -3,6 +3,7 @@ package admin.bean;
 import java.io.Serializable;
 
 import javax.persistence.Embeddable;
+
 @Embeddable
 public class FilmDirectorPrimaryKey implements Serializable {
 	private String fid;
@@ -12,6 +13,10 @@ public class FilmDirectorPrimaryKey implements Serializable {
 		super();
 		this.fid = fid;
 		this.did = did;
+	}
+
+	public FilmDirectorPrimaryKey() {
+		// TODO Auto-generated constructor stub
 	}
 
 	public String getFid() {
@@ -29,5 +34,5 @@ public class FilmDirectorPrimaryKey implements Serializable {
 	public void setDid(String did) {
 		this.did = did;
 	}
-	
+
 }

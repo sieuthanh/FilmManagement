@@ -4,6 +4,7 @@ import java.sql.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.LinkedList;
+import java.util.Vector;
 
 public class DatabaseManager {
 
@@ -16,7 +17,7 @@ public class DatabaseManager {
 
 			Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
 
-			String connectionUrl = "jdbc:sqlserver://localhost:1433;DatabaseName=IMDB;user=root;password=admin";
+			String connectionUrl = "jdbc:sqlserver://localhost:1433;DatabaseName=IMDB;user=sa;password=1";
 			connection = DriverManager
 					.getConnection(connectionUrl);
 		} catch (SQLException ex) {
@@ -471,6 +472,26 @@ public class DatabaseManager {
 		return get;
 	}
 
+	public LinkedList getStarByMovie2(String fid) {
+		LinkedList get = new LinkedList();
+		Person x;
+		if (connection != null) {
+			try {
+				result = statement
+						.executeQuery("SELECT person.* FROM filmstar,person "
+								+ "WHERE fid = '" + fid + "' AND sid = id");
+				while (result.next()) {
+					x = new Person(result.getString(2));
+					get.add(x);
+				}
+			} catch (SQLException ex) {
+				Logger.getLogger(DatabaseManager.class.getName()).log(
+						Level.SEVERE, null, ex);
+			}
+		}
+		return get;
+	}
+	
 	public LinkedList getDirectorByMovie(String fid) {
 		LinkedList get = new LinkedList();
 		Person x;
@@ -493,6 +514,26 @@ public class DatabaseManager {
 		}
 		return get;
 	}
+	
+	public LinkedList getDirectorByMovie2(String fid) {
+		LinkedList get = new LinkedList();
+		Person x;
+		if (connection != null) {
+			try {
+				result = statement
+						.executeQuery("SELECT person.* FROM filmdirector,person "
+								+ "WHERE fid = '" + fid + "' AND did = id");
+				while (result.next()) {
+					x = new Person(result.getString(2));
+					get.add(x);
+				}
+			} catch (SQLException ex) {
+				Logger.getLogger(DatabaseManager.class.getName()).log(
+						Level.SEVERE, null, ex);
+			}
+		}
+		return get;
+	}
 
 	public LinkedList getCompanyByMovie(String fid) {
 		LinkedList get = new LinkedList();
@@ -504,6 +545,26 @@ public class DatabaseManager {
 								+ "WHERE fid = '" + fid + "' AND sid = id");
 				while (result.next()) {
 					x = new Company(result.getString(1), result.getString(2));
+					get.add(x);
+				}
+			} catch (SQLException ex) {
+				Logger.getLogger(DatabaseManager.class.getName()).log(
+						Level.SEVERE, null, ex);
+			}
+		}
+		return get;
+	}
+	
+	public LinkedList getCompanyByMovie2(String fid) {
+		LinkedList get = new LinkedList();
+		Company x;
+		if (connection != null) {
+			try {
+				result = statement
+						.executeQuery("SELECT company.* FROM filmcompany,company "
+								+ "WHERE fid = '" + fid + "' AND sid = id");
+				while (result.next()) {
+					x = new Company(result.getString(2));
 					get.add(x);
 				}
 			} catch (SQLException ex) {

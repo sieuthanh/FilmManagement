@@ -2,6 +2,8 @@ package admin.view;
 
 
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 import javax.swing.JPanel;
@@ -52,6 +54,7 @@ public class AdminMainFrame2 extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         btnAdmin = new javax.swing.JButton();
         btnPerson = new javax.swing.JButton();
+        btnStatistics = new javax.swing.JButton();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         mnExit = new javax.swing.JMenuItem();
@@ -123,6 +126,27 @@ public class AdminMainFrame2 extends javax.swing.JFrame {
         });
         jPanel1.add(btnPerson, new org.netbeans.lib.awtextra.AbsoluteConstraints(480, 60, 100, 50));
         
+        btnStatistics.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/button_admin_dark.png"))); // NOI18N
+        btnStatistics.setToolTipText("Manage managers");
+        btnStatistics.setBorder(null);
+        btnStatistics.setContentAreaFilled(false);
+        btnStatistics.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        btnStatistics.setFocusable(false);
+        btnStatistics.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnStatisticsMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnStatisticsMouseExited(evt);
+            }
+        });
+        btnStatistics.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStatisticsActionPerformed(evt);
+            }
+        });
+        jPanel1.add(btnStatistics, new org.netbeans.lib.awtextra.AbsoluteConstraints(330, 60, 100, 50));
+        
         jMenu1.setText("File");
 
         mnExit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/exit_16.png"))); // NOI18N
@@ -158,12 +182,39 @@ public class AdminMainFrame2 extends javax.swing.JFrame {
 
     //<editor-fold defaultstate="collapsed" desc="main buttons click events">
 
-    private void btnPersonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPersonActionPerformed
+    protected void btnStatisticsActionPerformed(ActionEvent evt) {
+		// TODO Auto-generated method stub
+        personActive = false;
+        adminActive = false;
+        statisticsActive = true;
+        btnPerson.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/button_labor_dark.png")));
+        btnAdmin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/button_admin_dark.png")));
+        btnStatistics.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/button_admin_white.png")));
+        callJPanel(statisticsControl);
+	}
+
+	protected void btnStatisticsMouseExited(MouseEvent evt) {
+		// TODO Auto-generated method stub
+        if (!statisticsActive) {
+            btnStatistics.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/button_admin_dark.png")));
+        }
+	}
+
+	protected void btnStatisticsMouseEntered(MouseEvent evt) {
+		// TODO Auto-generated method stub
+        if (!statisticsActive) {
+            btnStatistics.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/button_admin_dark.png")));
+        }
+	}
+
+	private void btnPersonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPersonActionPerformed
         // TODO add your handling code here:
         personActive = true;
         adminActive = false;
+        statisticsActive = false;
         btnPerson.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/button_labor_white.png")));
         btnAdmin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/button_admin_dark.png")));
+        btnStatistics.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/button_admin_dark.png")));
         callJPanel(personControl);
     }
 
@@ -186,8 +237,10 @@ public class AdminMainFrame2 extends javax.swing.JFrame {
         // TODO add your handling code here:
         adminActive = true;
         personActive = false;
+        statisticsActive = false;
         btnAdmin.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/button_admin_white.png")));
         btnPerson.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/button_labor_dark.png")));
+        btnStatistics.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/button_admin_dark.png")));
         callJPanel(adminControl);
     }//GEN-LAST:event_btnAdminActionPerformed
     //</editor-fold>
@@ -277,11 +330,14 @@ public class AdminMainFrame2 extends javax.swing.JFrame {
 
     public static boolean adminActive = false;
     public static boolean personActive = false;
+    public static boolean statisticsActive = false;
     AdminControl adminControl = new AdminControl();
     PersonControl personControl = new PersonControl();
+    StatisticsControl statisticsControl = new StatisticsControl();
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAdmin;
     private javax.swing.JButton btnPerson;
+    private javax.swing.JButton btnStatistics;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel7;

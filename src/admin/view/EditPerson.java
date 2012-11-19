@@ -11,6 +11,8 @@
 package admin.view;
 
 import java.awt.Image;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.swing.text.JTextComponent;
 
@@ -32,7 +34,7 @@ public class EditPerson extends javax.swing.JDialog {
         initComponents();
         Image icon = getToolkit().getImage(getClass().getResource("/images/app_icon_32.png"));
         setIconImage(icon);
-        //setLocation();
+        setLocationRelativeTo(null);
         setVisible(true);
         this.selectedID = selectedID;
         fillFields();
@@ -40,19 +42,36 @@ public class EditPerson extends javax.swing.JDialog {
 
     // fill fields on dialog
     private void fillFields() {
-        Person admin = PersonController.getPerson(selectedID);
-        txtPosition.setText("Administrator");
-        txtUserID.setText(admin.getId());
-        txtName.setText(admin.getName());
-//        if (admin.getSex()) {
-//            radMale.setSelected(true);
-//        } else {
-//            radFemale.setSelected(true);
-//        }
-        //jxBD.setDate(admin.getDay());
-        txtPhone.setText(admin.getDay());
-        txtEmail.setText(admin.getYear());
-        txtAddress.setText(admin.getIsdirector());
+    	SimpleDateFormat mySimpleDateFormat = new SimpleDateFormat("dd/mm/yyyy");
+        Person person = PersonController.getPerson(selectedID);
+        Date date = new Date();
+        System.out.println(person.getDay());
+        String[] arrstr = person.getDay().split("-");
+        int day = Integer.parseInt(arrstr[0]);
+        int month = Integer.parseInt(arrstr[1]);
+        int year = Integer.parseInt(person.getYear());
+        day = date.getDay();
+        month = date.getMonth();
+        year = date.getYear();
+        txtId.setText(person.getId());
+        txtPName.setText(person.getName());
+        txtBorn.setText(person.getBorn());
+        if (person.getSex()=="Male") {
+            radMale.setSelected(true);
+        } else {
+            radFemale.setSelected(true);
+        }
+        if(person.getIsdirector().equals("1")){
+        	isDirector.setSelected(true);
+        }else {
+        	isDirector.setSelected(false);
+        }
+        if(person.getIsstar().equals("1")){
+        	isStar.setSelected(true);
+        }else {
+        	isStar.setSelected(false);
+        }
+			jxDate.setDate(date);
     }
 
     /** This method is called from within the constructor to
@@ -64,86 +83,99 @@ public class EditPerson extends javax.swing.JDialog {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        buttonGroup2 = new javax.swing.ButtonGroup();
+buttonGroup1 = new javax.swing.ButtonGroup();
+        
         jPanel1 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
-        jLabel5 = new javax.swing.JLabel();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel7 = new javax.swing.JLabel();
+        
+        jLabelName = new javax.swing.JLabel();
+        jLabelGender = new javax.swing.JLabel();
+        jLabelBirthday = new javax.swing.JLabel();
+        jLabelStar = new javax.swing.JLabel();
+        jLabelDirector = new javax.swing.JLabel();
+        jLabelBorn = new javax.swing.JLabel();
         jLabel8 = new javax.swing.JLabel();
-        jLabel9 = new javax.swing.JLabel();
-        txtUserID = new javax.swing.JTextField();
-        txtName = new javax.swing.JTextField();
+        jLabelId = new javax.swing.JLabel();
+        jLabelJob = new javax.swing.JLabel();
+        
+        txtDirector = new javax.swing.JTextField();
+        txtBorn = new javax.swing.JTextField();
+        txtPName = new javax.swing.JTextField();
+        txtId = new javax.swing.JTextField();
+        txtStar = new javax.swing.JTextField();
+        
         radMale = new javax.swing.JRadioButton();
         radFemale = new javax.swing.JRadioButton();
-        jxBD = new org.jdesktop.swingx.JXDatePicker();
-        txtPhone = new javax.swing.JTextField();
-        txtEmail = new javax.swing.JTextField();
-        txtAddress = new javax.swing.JTextField();
+        
+        isStar = new javax.swing.JCheckBox();
+        isDirector = new javax.swing.JCheckBox();
+        
+        jxDate = new org.jdesktop.swingx.JXDatePicker();
+
         btnUpdate = new javax.swing.JButton();
-        btnReset = new javax.swing.JButton();
         btnExit = new javax.swing.JButton();
-        txtPosition = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Edit Manager Profile");
+        setTitle("Update Person");
 
         jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
-        jLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/label_profile.png"))); // NOI18N
+        jLabelName.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabelName.setForeground(new java.awt.Color(51, 51, 51));
+        jLabelName.setText("Name");
 
-        jLabel2.setFont(new java.awt.Font("Tahoma", 0, 12));
-        jLabel2.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel2.setText("Position");
+        jLabelGender.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabelGender.setForeground(new java.awt.Color(51, 51, 51));
+        jLabelGender.setText("Gender");
 
-        jLabel3.setFont(new java.awt.Font("Tahoma", 0, 12));
-        jLabel3.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel3.setText("User ID");
+        jLabelBirthday.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabelBirthday.setForeground(new java.awt.Color(51, 51, 51));
+        jLabelBirthday.setText("Birthday");
 
-        jLabel4.setFont(new java.awt.Font("Tahoma", 0, 12));
-        jLabel4.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel4.setText("Fullname");
+        jLabelStar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabelStar.setForeground(new java.awt.Color(51, 51, 51));
+        jLabelStar.setText("Star");
 
-        jLabel5.setFont(new java.awt.Font("Tahoma", 0, 12));
-        jLabel5.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel5.setText("Gender");
+        jLabelDirector.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabelDirector.setForeground(new java.awt.Color(51, 51, 51));
+        jLabelDirector.setText("Director");
 
-        jLabel6.setFont(new java.awt.Font("Tahoma", 0, 12));
-        jLabel6.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel6.setText("Birthday");
+        jLabelBorn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabelBorn.setForeground(new java.awt.Color(51, 51, 51));
+        jLabelBorn.setText("Born");
+        
+        jLabelJob.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabelJob.setForeground(new java.awt.Color(51, 51, 51));
+        jLabelJob.setText("Job");
 
-        jLabel7.setFont(new java.awt.Font("Tahoma", 0, 12));
-        jLabel7.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel7.setText("Phone");
-
-        jLabel8.setFont(new java.awt.Font("Tahoma", 0, 12));
-        jLabel8.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel8.setText("Email");
-
-        jLabel9.setFont(new java.awt.Font("Tahoma", 0, 12));
-        jLabel9.setForeground(new java.awt.Color(51, 51, 51));
-        jLabel9.setText("Address");
-
-        txtUserID.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
-
-        txtName.setFont(new java.awt.Font("Tahoma", 0, 12));
+        txtDirector.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
         radMale.setBackground(new java.awt.Color(255, 255, 255));
-        buttonGroup2.add(radMale);
+        buttonGroup1.add(radMale);
+        radMale.setSelected(true);
         radMale.setText("Male");
 
         radFemale.setBackground(new java.awt.Color(255, 255, 255));
-        buttonGroup2.add(radFemale);
+        buttonGroup1.add(radFemale);
         radFemale.setText("Female");
+        
+        isStar.setBackground(new java.awt.Color(255, 255, 255));
+        isStar.setText("Star");
+        isStar.setFocusable(false);
 
-        txtPhone.setFont(new java.awt.Font("Tahoma", 0, 12));
+        isDirector.setBackground(new java.awt.Color(255, 255, 255));
+        isDirector.setText("Director");
+        isDirector.setFocusable(false);
 
-        txtEmail.setFont(new java.awt.Font("Tahoma", 0, 12));
+        txtBorn.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
 
-        txtAddress.setFont(new java.awt.Font("Tahoma", 0, 12));
+        txtPName.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        txtId.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
+        jLabel8.setFont(new java.awt.Font("Tahoma", 1, 24)); // NOI18N
+        jLabel8.setForeground(new java.awt.Color(0, 102, 153));
+        jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        jLabel8.setText("Update Person");
 
         btnUpdate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/update.png"))); // NOI18N
         btnUpdate.setText("Update");
@@ -151,15 +183,6 @@ public class EditPerson extends javax.swing.JDialog {
         btnUpdate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnUpdateActionPerformed(evt);
-            }
-        });
-
-        btnReset.setIcon(new javax.swing.ImageIcon(getClass().getResource("/images/refresh.png"))); // NOI18N
-        btnReset.setText("Reset Password");
-        btnReset.setMargin(new java.awt.Insets(2, 5, 2, 5));
-        btnReset.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-               // btnResetActionPerformed(evt);
             }
         });
 
@@ -171,112 +194,99 @@ public class EditPerson extends javax.swing.JDialog {
             }
         });
 
-        txtPosition.setEditable(false);
-        txtPosition.setFont(new java.awt.Font("Tahoma", 0, 12));
-        txtPosition.setForeground(new java.awt.Color(255, 51, 0));
+        jLabelId.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+        jLabelId.setForeground(new java.awt.Color(51, 51, 51));
+        jLabelId.setText("Id");
+
+        txtStar.setFont(new java.awt.Font("Tahoma", 0, 12)); // NOI18N
+
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(46, 46, 46)
+            .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 367, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addContainerGap(27, Short.MAX_VALUE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelId)
+                    .addComponent(jLabelName)
+                    .addComponent(jLabelGender)
+                    .addComponent(jLabelBirthday)
+                    .addComponent(jLabelJob)
+                    .addComponent(jLabelBorn))
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5)
-                            .addComponent(jLabel6)
-                            .addComponent(jLabel7)
-                            .addComponent(jLabel8)
-                            .addComponent(jLabel9))
-                        .addGap(52, 52, 52)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(radMale)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(radFemale))
-                            .addComponent(txtName, javax.swing.GroupLayout.DEFAULT_SIZE, 280, Short.MAX_VALUE)
-                            .addComponent(jxBD, javax.swing.GroupLayout.PREFERRED_SIZE, 196, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(txtEmail)
-                            .addComponent(txtAddress)
-                            .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, 180, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
-                        .addGap(57, 57, 57)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(txtPosition)
-                            .addComponent(txtUserID, javax.swing.GroupLayout.DEFAULT_SIZE, 180, Short.MAX_VALUE))))
-                .addContainerGap(59, Short.MAX_VALUE))
+               			.addComponent(isStar)
+               			.addComponent(isDirector))
+               		.addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(radMale)
+                        .addComponent(radFemale))
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(txtId)
+                        .addComponent(txtPName, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jxDate, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtBorn, javax.swing.GroupLayout.PREFERRED_SIZE, 158, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26))
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGap(76, 76, 76)
+                .addGap(72, 72, 72)
                 .addComponent(btnUpdate)
-                .addGap(32, 32, 32)
-                .addComponent(btnReset)
-                .addGap(33, 33, 33)
+                .addGap(74, 74, 74)
                 .addComponent(btnExit)
-                .addContainerGap(78, Short.MAX_VALUE))
+                .addContainerGap(75, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(jLabel1)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2)
-                    .addComponent(txtPosition, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(txtUserID, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4)
-                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(radMale)
-                    .addComponent(radFemale))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(jxBD, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel7)
-                    .addComponent(txtPhone, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGap(11, 11, 11)
                     .addComponent(jLabel8)
-                    .addComponent(txtEmail, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(txtAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(33, 33, 33)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnExit, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 29, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(21, Short.MAX_VALUE))
-        );
+                    .addGap(27, 27, 27)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabelId)
+                        .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabelName)
+                        .addComponent(txtPName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(radMale)
+                            .addComponent(jLabelGender))
+                        .addComponent(radFemale))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jxDate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabelBirthday))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    		.addComponent(jLabelJob)
+                    		.addComponent(isStar)
+                    		.addComponent(isDirector))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(txtBorn, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabelBorn))
+                    .addGap(18, 18, 18)
+                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(btnUpdate)
+                        .addComponent(btnExit))
+                    .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            );
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        );
+            javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+            getContentPane().setLayout(layout);
+            layout.setHorizontalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            );
+            layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            );
 
-        pack();
+            pack();
     }// </editor-fold>//GEN-END:initComponents
 
     //<editor-fold defaultstate="collapsed" desc="events on buttons">
@@ -285,74 +295,70 @@ public class EditPerson extends javax.swing.JDialog {
         dispose();
     }//GEN-LAST:event_btnExitActionPerformed
 
-//    // reset manager's password
-//    private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
-//        // TODO add your handling code here:
-//        new CustomMessageDialog(null, true, "Warning!", "<html>This will reset the current<br> password to default</html>", CustomMessageDialog.CONFIRM);
-//        if (CustomMessageDialog.STATUS == CustomMessageDialog.CANCEL) {
-//            return;
-//        }
-//        if (PersonController.reset(selectedID)) {
-//            new CustomMessageDialog(null, true, "Done!", "Reset password sucessfully!", CustomMessageDialog.DONE);
-//        }
-//    }//GEN-LAST:event_btnResetActionPerformed
-
     // update a manager's profile
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
         // TODO add your handling code here:
-        JTextComponent[] tcp = {txtUserID};
+        JTextComponent[] tcp = {txtId, txtPName, txtBorn};
         if (!Validator.validateComponents(tcp)) {
             return;
         }
-        String username = txtUserID.getText();
-        String name = txtName.getText();
-        boolean male = false;
-        if (radMale.isSelected()) {
-            male = true;
+        String id = txtId.getText();
+        String name = txtPName.getText();
+        String born = txtBorn.getText();
+        String gender = "Male";
+        boolean male = true;
+        if (radFemale.isSelected()) {
+            male = false;
+            gender = "Female";
         }
-        Date bd = jxBD.getDate();
-        String phone = txtPhone.getText();
-        if (!Validator.isEmpty(phone)) {
-            if (!Validator.validatePhone(txtPhone)) {
-                return;
-            }
+        String star = "0";
+        if (isStar.isSelected()) {
+            star = "1";
         }
-        String email = txtEmail.getText();
-        if (!Validator.isEmpty(email)) {
-            if (!Validator.validateEmail(txtEmail)) {
-                return;
-            }
+        String director = "0";
+        if (isDirector.isSelected()) {
+            director = "1";
         }
-        String address = txtAddress.getText();
-//        if (PersonController.update(selectedID, username, name, male, bd, phone, email, address)) {
-//            new CustomMessageDialog(null, true, "Done!", "Updated sucessfully!", CustomMessageDialog.DONE);
-//            AdminMovieList2.reloadTable();
-//        }
+        String day = String.valueOf(jxDate.getDate().getDay());
+        String month = String.valueOf(jxDate.getDate().getMonth()+1);
+        String year = String.valueOf(jxDate.getDate().getYear()+1900);
+        String day1 = day+"-"+month;
+        if (PersonController.update(selectedID, name, gender, day1, year, born, director, star)) {
+            new CustomMessageDialog(null, true, "Done!", "Updated sucessfully!", CustomMessageDialog.DONE);
+            AdminPersonList.reloadTable();
+        }
     }//GEN-LAST:event_btnUpdateActionPerformed
     //</editor-fold>
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnExit;
-    private javax.swing.JButton btnReset;
     private javax.swing.JButton btnUpdate;
-    private javax.swing.ButtonGroup buttonGroup2;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
-    private javax.swing.JLabel jLabel7;
+    
+    private javax.swing.ButtonGroup buttonGroup1;
+    
+    private javax.swing.JLabel jLabelName;
+    private javax.swing.JLabel jLabelGender;
+    private javax.swing.JLabel jLabelBirthday;
+    private javax.swing.JLabel jLabelStar;
+    private javax.swing.JLabel jLabelDirector;
+    private javax.swing.JLabel jLabelBorn;
+    private javax.swing.JLabel jLabelId;
     private javax.swing.JLabel jLabel8;
-    private javax.swing.JLabel jLabel9;
+    private javax.swing.JLabel jLabelJob;
+    
     private javax.swing.JPanel jPanel1;
-    private org.jdesktop.swingx.JXDatePicker jxBD;
+    
+    private org.jdesktop.swingx.JXDatePicker jxDate;
+    
     private javax.swing.JRadioButton radFemale;
     private javax.swing.JRadioButton radMale;
-    private javax.swing.JTextField txtAddress;
-    private javax.swing.JTextField txtEmail;
-    private javax.swing.JTextField txtName;
-    private javax.swing.JTextField txtPhone;
-    private javax.swing.JTextField txtPosition;
-    private javax.swing.JTextField txtUserID;
+    
+    private javax.swing.JCheckBox isStar;
+    private javax.swing.JCheckBox isDirector;
+    
+    private javax.swing.JTextField txtId;
+    private javax.swing.JTextField txtPName;
+    private javax.swing.JTextField txtDirector;
+    private javax.swing.JTextField txtBorn;
+    private javax.swing.JTextField txtStar;
     // End of variables declaration//GEN-END:variables
 }
